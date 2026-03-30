@@ -1,6 +1,6 @@
 # mycalendar/views.py
 from django.shortcuts import render
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from .utils import CustomCalendar
 from .models import Event
 
@@ -13,17 +13,24 @@ def show_calendar(request, year=None, month=None):
         year = int(year)
         month = int(month)
 
-    # Use your new custom calendar instead!
+    # Logic for Previous and Next buttons
+    current_date = date(year, month, 1)
+    prev_month = current_date - timedelta(days=1)
+    next_month = current_date + timedelta(days=32) # Jumps to next month
+
     cal = CustomCalendar(year, month)
     html_calendar = cal.formatmonth(year, month)
 
     context = {
         'calendar': html_calendar,
         'year': year,
-        'month': month
+        'month': month,
+        'prev_year': prev_month.year,   
+        'prev_month': prev_month.month,
+        'next_year': next_month.year,
+        'next_month': next_month.month,
     }
     return render(request, 'mycalendar/calendar.html', context)
-
 # NEW VIEW: Handles the specific day's events
 def daily_events(request, year, month, day):
     # Fetch all events from the database that match this exact date
