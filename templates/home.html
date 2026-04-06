@@ -1,0 +1,32 @@
+<h1>Welcome to my new Django site!</h1>
+
+<nav>
+    <a href="/calendar/">Go to Full Calendar</a><br>
+    {% if user.is_authenticated %}
+        <p>Welcome back, {{ user.username }}!</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        <a href="/accounts/login/">Login</a> | <a href="/signup/">Sign Up</a>
+    {% endif %}
+</nav>
+
+<hr>
+
+<h2>Upcoming Events</h2>
+
+<ul>
+    {% for event in events %}
+        <li>
+            <strong>{{ event.date }}</strong>: {{ event.title }}
+            
+            <a href="/calendar/{{ event.date.year }}/{{ event.date.month }}/{{ event.date.day }}/">
+                (View Day)
+            </a>
+        </li>
+    {% empty %}
+        <li>No upcoming events scheduled.</li>
+    {% endfor %}
+</ul>

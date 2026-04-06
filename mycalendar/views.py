@@ -58,3 +58,17 @@ def signup(request):
         form = UserCreationForm()
     
     return render(request, 'signup.html', {'form': form})
+
+#Handles the homepage and upcoming events
+def home(request):
+    # Get today's date
+    today = date.today()
+    
+    # Fetch events where the date is greater than or equal to today, 
+    # order them chronologically, and grab the first 5
+    upcoming_events = Event.objects.filter(date__gte=today).order_by('date')[:5]
+    
+    context = {
+        'events': upcoming_events
+    }
+    return render(request, 'home.html', context)

@@ -17,20 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.http import HttpResponse
-from mycalendar import views as my_views
-
-def home(request):
-    return HttpResponse("""
-        <h1>Welcome to my new Django site!</h1>
-        <a href="/calendar/">Go to Calendar</a> |
-        <a href="/accounts/login/">Login</a> | <a href="/signup/">Sign Up</a>
-    """)
+from mycalendar import views as mycalendar_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # Added a trailing slash to 'calendar/' to follow Django's convention for URL patterns
     path('calendar/', include('mycalendar.urls')), 
     path('accounts/', include('django.contrib.auth.urls')),
-    path('signup/', my_views.signup, name='signup'),
-    path('', home, name='home'),  
+    path('signup/', mycalendar_views.signup, name='signup'),
+    path('', mycalendar_views.home, name='home'),
 ]
