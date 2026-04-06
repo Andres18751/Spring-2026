@@ -1,5 +1,6 @@
 # mycalendar/views.py
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
 from datetime import datetime, date, timedelta
 from .utils import CustomCalendar
 from .models import Event
@@ -31,6 +32,7 @@ def show_calendar(request, year=None, month=None):
         'next_month': next_month.month,
     }
     return render(request, 'mycalendar/calendar.html', context)
+
 # NEW VIEW: Handles the specific day's events
 def daily_events(request, year, month, day):
     # Fetch all events from the database that match this exact date
@@ -45,3 +47,14 @@ def daily_events(request, year, month, day):
         'date': formatted_date,
     }
     return render(request, 'mycalendar/events.html', context)
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save() # creates the new user in the database
+            return redirect('login') # Send them to the login page after they sign up
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'signup.html', {'form': form})
