@@ -19,10 +19,14 @@ from django.urls import include, path
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("<h1>Welcome to my new Django site!</h1>")
+    return HttpResponse("""
+        <h1>Welcome to my new Django site!</h1>
+        <a href="/calendar/">Go to Calendar</a>
+    """)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('calendar', include('mycalendar.urls')),
-    path('', home, name='home'),  # This replaces the default rocket page
+    # Added a trailing slash to 'calendar/' to follow Django's convention for URL patterns
+    path('calendar/', include('mycalendar.urls')), 
+    path('', home, name='home'),  
 ]
