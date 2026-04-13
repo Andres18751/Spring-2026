@@ -22,6 +22,13 @@ def show_calendar(request, year=None, month=None):
     cal = CustomCalendar(year, month)
     html_calendar = cal.formatmonth(year, month)
 
+    # --- NEW CODE STARTS HERE --- 
+    # ADDING EVENT HIGHLIGHTING
+    # Fetch all events for this specific month and year
+    events_this_month = Event.objects.filter(date__year=year, date__month=month)
+    event_days = list(events_this_month.values_list('date__day', flat=True))
+    # --- NEW CODE ENDS HERE ---
+
     context = {
         'calendar': html_calendar,
         'year': year,
@@ -30,6 +37,7 @@ def show_calendar(request, year=None, month=None):
         'prev_month': prev_month.month,
         'next_year': next_month.year,
         'next_month': next_month.month,
+        'event_days': event_days,  # Pass the list of event days to the template
     }
     return render(request, 'mycalendar/calendar.html', context)
 
