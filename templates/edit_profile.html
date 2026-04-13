@@ -1,0 +1,17 @@
+{% extends 'home.html' %} {% block content %}
+<div class="dashboard-container" style="padding-top: 50px;">
+    <h2>Edit Loadout</h2>
+    <div class="event-card" style="display: block;">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn" style="margin-top: 15px;">Save Loadout</button>
+            <a href="{% url 'profile' %}" class="btn" style="border-color: var(--text-muted); color: var(--text-muted);">Cancel</a>
+        </form>
+    </div>
+</div>
+<style>
+    /* Quick styling to make the form inputs match the dark mode theme */
+    input, textarea { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; padding: 10px; width: 100%; border-radius: 5px; }
+</style>
+{% endblock %}

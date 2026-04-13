@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from datetime import datetime, date, timedelta
 from .utils import CustomCalendar
-from .models import Event
+from .models import Event, Profile
+from .forms import ProfileForm
 from django.contrib.auth.decorators import login_required
 
 def show_calendar(request, year=None, month=None):
@@ -85,5 +86,24 @@ def home(request):
 # NEW VIEW: The User Profile Page
 @login_required
 def profile(request):
-    # Django automatically passes the logged-in user to the template
-    return render(request, 'profile.html')
+    # This safely gets the user's profile, or creates a blank one if they just signed up
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+    
+    return render(request, 'profile.html', {'profile': user_profile})
+
+@login_required
+def edit_profile(request):
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+    # If they hit the "Save" button
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile') # Send them back to their loadout card
+            
+    # If they are just loading the page to type
+    else:
+        form = ProfileForm(instance=user_profile)
+        
+    return render(request, 'edit_profile.html', {'form': form})

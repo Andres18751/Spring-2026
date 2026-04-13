@@ -164,15 +164,16 @@
         <div class="stats-grid">
             <div class="stat-box">
                 <h3>Current Bio</h3>
-                <p style="font-size: 0.9rem; font-style: italic; color: #888;">No bio written yet. Ready up and tell the lobby what you play!</p>
+                <p style="font-size: 0.9rem; font-style: italic; color: #888;">{{ profile.bio|default:"No bio written yet. Tell the lobby what you play!" }}</p>
             </div>
+
             <div class="stat-box">
                 <h3>Favorite Games</h3>
-                <p style="font-size: 0.9rem; color: #888;">N/A</p>
+                <p style="font-size: 0.9rem; color: #888;">{{ profile.favorite_games|default:"No favorite games listed." }}</p>
             </div>
         </div>
 
-        <a href="#" class="edit-btn">Edit Loadout</a>
+        <a href="{% url 'edit_profile' %}" class="edit-btn">Edit Loadout</a>
     </div>
 </div>
 
