@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from datetime import datetime, date, timedelta
 from .utils import CustomCalendar
 from .models import Event
+from django.contrib.auth.decorators import login_required
 
 def show_calendar(request, year=None, month=None):
     if year is None or month is None:
@@ -80,3 +81,9 @@ def home(request):
         'events': upcoming_events
     }
     return render(request, 'home.html', context)
+
+# NEW VIEW: The User Profile Page
+@login_required
+def profile(request):
+    # Django automatically passes the logged-in user to the template
+    return render(request, 'profile.html')
