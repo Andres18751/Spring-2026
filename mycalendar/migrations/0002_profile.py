@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
                 ('bio', models.TextField(blank=True, max_length=500)),
                 ('favorite_games', models.CharField(blank=True, max_length=100)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
+            ],   
         ),
     ]
