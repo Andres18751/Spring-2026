@@ -62,12 +62,13 @@ def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save() # creates the new user in the database
+            user = form.save()
+            login(request, user)
             return redirect('login') # Send them to the login page after they sign up
     else:
         form = UserCreationForm()
     
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'mycalendar/signup.html', {'form': form})
 
 #Handles the homepage and upcoming events
 def home(request):
@@ -107,3 +108,22 @@ def edit_profile(request):
         form = ProfileForm(instance=user_profile)
         
     return render(request, 'edit_profile.html', {'form': form})
+
+@login_required
+def create_profile(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = None
+    
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            new_profile = form.save(commit=False)
+            new_profile.user = request.user
+            new_profile.save()
+            return redirect('profile_success')
+    else:
+        form = ProfileForm(instance=profile)
+    
+    return render(request, 'mycalendar/signup.html', {'form': form})
