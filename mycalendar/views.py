@@ -6,6 +6,8 @@ from .utils import CustomCalendar
 from .models import Event, Profile
 from .forms import ProfileForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
+
 
 def show_calendar(request, year=None, month=None):
     if year is None or month is None:
@@ -59,16 +61,17 @@ def daily_events(request, year, month, day):
     return render(request, 'mycalendar/events.html', context)
 
 def signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('login') # Send them to the login page after they sign up
+            return redirect("calendar-home")
     else:
         form = UserCreationForm()
-    
-    return render(request, 'mycalendar/signup.html', {'form': form})
+
+    return render(request, "mycalendar/signup.html", {"form": form})
 
 #Handles the homepage and upcoming events
 def home(request):
