@@ -101,7 +101,7 @@ def edit_profile(request):
 
     # If they hit the "Save" button
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=user_profile)
+        form = ProfileForm(request.POST, request.FILES, instance=user_profile)
         if form.is_valid():
             form.save()
             return redirect('profile') # Send them back to their loadout card
@@ -120,7 +120,7 @@ def create_profile(request):
         profile = None
     
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             new_profile = form.save(commit=False)
             new_profile.user = request.user

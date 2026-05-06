@@ -61,6 +61,15 @@
             margin-bottom: 20px;
         }
 
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 14px var(--primary-glow);
+        }
+
         .avatar-placeholder {
             width: 80px;
             height: 80px;
@@ -112,6 +121,34 @@
             text-transform: uppercase;
         }
 
+        .stat-box p {
+            font-size: 0.9rem;
+            color: #c9d1d9;
+            line-height: 1.5;
+            margin: 0;
+            white-space: pre-line;
+        }
+
+        .stat-box.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .pill {
+            border: 1px solid #30363d;
+            border-radius: 999px;
+            color: var(--text-main);
+            background: #21262d;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+        }
+
         .edit-btn {
             display: block;
             text-align: center;
@@ -143,6 +180,12 @@
         }
         .back-nav a:hover { color: var(--primary); }
 
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -154,7 +197,11 @@
 
     <div class="player-card">
         <div class="header-section">
-            <div class="avatar-placeholder">Avatar</div>
+            {% if profile.profile_picture %}
+                <img class="avatar" src="{{ profile.profile_picture.url }}" alt="{{ user.username }} profile picture">
+            {% else %}
+                <div class="avatar-placeholder">Avatar</div>
+            {% endif %}
             <div>
                 <h1>{{ user.username }}</h1>
                 <span class="join-date">Joined: {{ user.date_joined|date:"F Y" }}</span>
@@ -163,13 +210,57 @@
 
         <div class="stats-grid">
             <div class="stat-box">
-                <h3>Current Bio</h3>
-                <p style="font-size: 0.9rem; font-style: italic; color: #888;">{{ profile.bio|default:"No bio written yet. Tell the lobby what you play!" }}</p>
+                <h3>Bio</h3>
+                <p>{{ profile.bio|default:"No bio written yet. Tell the lobby what you play!" }}</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Fun Facts</h3>
+                <p>{{ profile.fun_facts|default:"No fun facts listed yet." }}</p>
             </div>
 
             <div class="stat-box">
                 <h3>Favorite Games</h3>
-                <p style="font-size: 0.9rem; color: #888;">{{ profile.favorite_games|default:"No favorite games listed." }}</p>
+                <p>{{ profile.favorite_games|default:"No favorite games listed." }}</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Interests</h3>
+                {% if profile.tag_labels %}
+                    <div class="pill-list">
+                        {% for tag in profile.tag_labels %}
+                            <span class="pill">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No interests selected.</p>
+                {% endif %}
+            </div>
+
+            <div class="stat-box">
+                <h3>Available Times</h3>
+                {% if profile.meeting_time_labels %}
+                    <div class="pill-list">
+                        {% for time in profile.meeting_time_labels %}
+                            <span class="pill">{{ time }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No meeting times selected.</p>
+                {% endif %}
+            </div>
+
+            <div class="stat-box">
+                <h3>Available Days</h3>
+                {% if profile.day_available_labels %}
+                    <div class="pill-list">
+                        {% for day in profile.day_available_labels %}
+                            <span class="pill">{{ day }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No days selected.</p>
+                {% endif %}
             </div>
         </div>
 
