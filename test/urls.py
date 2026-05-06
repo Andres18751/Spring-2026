@@ -27,6 +27,7 @@ urlpatterns = [
     path('calendar/', include('mycalendar.urls')), 
     path('accounts/', include('django.contrib.auth.urls')),
     path('signup/', mycalendar_views.signup, name='signup'),
+    path('events/create/', mycalendar_views.create_event, name='create_event'),
     path('profile/', mycalendar_views.profile, name='profile'),
     path('profile/edit/', mycalendar_views.edit_profile, name='edit_profile'),
     path('', mycalendar_views.home, name='home'),

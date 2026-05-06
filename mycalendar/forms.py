@@ -1,5 +1,16 @@
 from django import forms
-from .models import Profile, TAGS_CHOICES, MEETING_TIME_CHOICES, DAYS_AVAILABLE
+from .models import Event, Profile, TAGS_CHOICES, MEETING_TIME_CHOICES, DAYS_AVAILABLE
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'date']
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'e.g., Smash Singles Bracket'}),
+            'description': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Add rules, check-in time, prize info, or anything players should know.'}),
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 class ProfileForm(forms.ModelForm):
     tags = forms.MultipleChoiceField(

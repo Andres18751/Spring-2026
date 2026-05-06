@@ -164,6 +164,10 @@
             <a class="btn" href="{% url 'calendar-specific' year=2026 month=4 %}">Full Calendar</a>
             
             <a class="btn" href="{% url 'profile' %}">My Loadout</a> 
+
+            {% if can_create_events %}
+                <a class="btn" href="{% url 'create_event' %}">Create Event</a>
+            {% endif %}
             
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}

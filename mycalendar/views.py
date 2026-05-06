@@ -1,12 +1,27 @@
 # mycalendar/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from datetime import datetime, date, timedelta
 from .utils import CustomCalendar
 from .models import Event, Profile
-from .forms import ProfileForm
+from .forms import EventForm, ProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+
+
+TOURNAMENT_ORGANIZER_GROUP = 'Tournament Organizer'
+
+
+def is_tournament_organizer(user):
+    return (
+        user.is_authenticated
+        and (
+            user.is_staff
+            or user.is_superuser
+            or user.groups.filter(name=TOURNAMENT_ORGANIZER_GROUP).exists()
+        )
+    )
 
 
 def show_calendar(request, year=None, month=None):
@@ -42,6 +57,7 @@ def show_calendar(request, year=None, month=None):
         'next_year': next_month.year,
         'next_month': next_month.month,
         'event_days': event_days,  # Pass the list of event days to the template
+        'can_create_events': is_tournament_organizer(request.user),
     }
     return render(request, 'mycalendar/calendar.html', context)
 
@@ -57,6 +73,8 @@ def daily_events(request, year, month, day):
     context = {
         'events': events,
         'date': formatted_date,
+        'date_value': date_obj.strftime('%Y-%m-%d'),
+        'can_create_events': is_tournament_organizer(request.user),
     }
     return render(request, 'mycalendar/events.html', context)
 
@@ -83,9 +101,35 @@ def home(request):
     upcoming_events = Event.objects.filter(date__gte=today).order_by('date')[:5]
     
     context = {
-        'events': upcoming_events
+        'events': upcoming_events,
+        'can_create_events': is_tournament_organizer(request.user),
     }
     return render(request, 'home.html', context)
+
+
+@login_required
+def create_event(request):
+    if not is_tournament_organizer(request.user):
+        messages.error(request, 'Only tournament organizers can create calendar events.')
+        return redirect('calendar-home')
+
+    initial = {}
+    requested_date = request.GET.get('date')
+    if requested_date:
+        initial['date'] = requested_date
+
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.created_by = request.user
+            event.save()
+            messages.success(request, 'Event pinned to the calendar.')
+            return redirect('daily-events', year=event.date.year, month=event.date.month, day=event.date.day)
+    else:
+        form = EventForm(initial=initial)
+
+    return render(request, 'mycalendar/create_event.html', {'form': form})
 
 # NEW VIEW: The User Profile Page
 @login_required

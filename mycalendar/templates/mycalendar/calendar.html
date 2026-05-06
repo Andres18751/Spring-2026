@@ -132,6 +132,9 @@
         /* Back to Home link */
         .home-nav {
             margin-top: 25px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
         }
         .home-nav a {
             text-decoration: none;
@@ -161,6 +164,9 @@
 
 <nav class="home-nav">
     <a href="{% url 'home' %}">&larr; Back to Home</a>
+    {% if can_create_events %}
+        <a href="{% url 'create_event' %}">Create Event</a>
+    {% endif %}
 </nav>
 
 <script>
@@ -171,7 +177,7 @@
         // We wrap the Django tag in quotes so it never breaks syntax
         const rawData = "{{ event_days|safe }}"; 
         if (rawData) {
-            eventDays = JSON.parse(rawData);S
+            eventDays = JSON.parse(rawData);
         }
     } catch (e) {
         console.log("No events found or parsing failed.");
