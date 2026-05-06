@@ -20,6 +20,7 @@ urlpatterns = [
     
     path('signup/', views.signup, name='signup'),
     
+    path('events/create/', views.create_event, name='create_event'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
 

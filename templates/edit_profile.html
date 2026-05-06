@@ -1,22 +1,365 @@
-{% extends 'home.html' %} {% block content %}
-<div class="dashboard-container" style="padding-top: 50px;">
-    <h2>Edit Loadout</h2>
-    <div class="event-card" style="display: block;">
-        <form method="post" enctype="multipart/form-data">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Loadout</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --primary: #00ffcc;
+            --primary-glow: rgba(0, 255, 204, 0.4);
+            --text-main: #e6edf3;
+            --text-muted: #7d8590;
+            --cell-bg: #21262d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            align-items: center;
+            background: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            padding: 60px 0 50px;
+        }
+
+        .dashboard-container {
+            max-width: 90%;
+            width: 680px;
+        }
+
+        h1 {
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin: 0 0 8px;
+            text-align: center;
+            text-shadow: 0 0 12px var(--primary-glow);
+            text-transform: uppercase;
+        }
+
+        h2 {
+            border-bottom: 1px solid #30363d;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin: 0 0 20px;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .welcome-text {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin: 0 0 34px;
+            text-align: center;
+        }
+
+        .back-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-nav a {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-nav a:hover {
+            color: var(--primary);
+        }
+
+        .loadout-card {
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+            overflow: hidden;
+        }
+
+        .loadout-card::before {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            content: "";
+            display: block;
+            height: 4px;
+            width: 100%;
+        }
+
+        .loadout-form {
+            display: block;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .form-section {
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+        }
+
+        .form-section:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .field-group,
+        .choice-panel {
+            margin-bottom: 18px;
+        }
+
+        .field-group label,
+        .choice-title {
+            color: var(--text-main);
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input,
+        textarea {
+            background: var(--bg);
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            color: var(--text-main);
+            font: inherit;
+            padding: 11px 12px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        textarea {
+            min-height: 115px;
+            resize: vertical;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+            outline: none;
+        }
+
+        input[type="file"] {
+            color: var(--text-muted);
+            padding: 9px;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: transparent;
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            color: var(--primary);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            margin-right: 12px;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--primary);
+            height: 16px;
+            margin: 0;
+            width: 16px;
+        }
+
+        .choice-panel {
+            background: var(--bg);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .choice-panel ul {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .choice-panel li label {
+            align-items: center;
+            background: var(--cell-bg);
+            border: 1px solid #30363d;
+            border-radius: 999px;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            font-size: 0.9rem;
+            font-weight: 600;
+            gap: 8px;
+            min-height: 42px;
+            padding: 8px 12px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .choice-panel li label:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(0, 255, 204, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .errorlist {
+            color: #ff7b72;
+            list-style: none;
+            margin: 8px 0 0;
+            padding: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            color: var(--primary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            color: var(--bg);
+        }
+
+        .save-btn {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .cancel-btn {
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+        }
+
+        .cancel-btn:hover {
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding-top: 35px;
+            }
+
+            .loadout-form {
+                padding: 20px;
+            }
+
+            .choice-panel ul {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions .btn {
+                text-align: center;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <div class="back-nav">
+        <a href="{% url 'profile' %}">&larr; Back to Loadout</a>
+    </div>
+
+    <h1>Edit Loadout</h1>
+    <p class="welcome-text">Tune your player card for the lobby.</p>
+
+    <div class="loadout-card">
+        <form class="loadout-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn" style="margin-top: 15px;">Save Loadout</button>
-            <a href="{% url 'profile' %}" class="btn" style="border-color: var(--text-muted); color: var(--text-muted);">Cancel</a>
+
+            <div class="form-section">
+                <h2>Player Identity</h2>
+
+                <div class="field-group">
+                    {{ form.profile_picture.label_tag }}
+                    {{ form.profile_picture }}
+                    {{ form.profile_picture.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.bio.label_tag }}
+                    {{ form.bio }}
+                    {{ form.bio.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.fun_facts.label_tag }}
+                    {{ form.fun_facts }}
+                    {{ form.fun_facts.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.favorite_games.label_tag }}
+                    {{ form.favorite_games }}
+                    {{ form.favorite_games.errors }}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Lobby Preferences</h2>
+
+                <div class="choice-panel">
+                    <span class="choice-title">{{ form.tags.label }}</span>
+                    {{ form.tags }}
+                    {{ form.tags.errors }}
+                </div>
+
+                <div class="choice-panel">
+                    <span class="choice-title">{{ form.meeting_times.label }}</span>
+                    {{ form.meeting_times }}
+                    {{ form.meeting_times.errors }}
+                </div>
+
+                <div class="choice-panel">
+                    <span class="choice-title">{{ form.days_available.label }}</span>
+                    {{ form.days_available }}
+                    {{ form.days_available.errors }}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn save-btn">Save Loadout</button>
+                <a href="{% url 'profile' %}" class="btn cancel-btn">Cancel</a>
+            </div>
         </form>
     </div>
 </div>
-<style>
-    /* Quick styling to make the form inputs match the dark mode theme */
-    input, textarea { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; padding: 10px; width: 100%; border-radius: 5px; box-sizing: border-box; }
-    input[type="checkbox"] { width: auto; margin-right: 8px; }
-    input[type="file"] { padding: 8px; }
-    label { color: #e6edf3; font-weight: 600; }
-    ul { list-style: none; padding-left: 0; }
-    li { margin: 8px 0; }
-</style>
-{% endblock %}
+
+</body>
+</html>

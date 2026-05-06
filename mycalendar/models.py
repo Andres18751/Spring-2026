@@ -29,6 +29,13 @@ class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     date = models.DateField()
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='created_events',
+    )
 
     def __str__(self):
         return self.title

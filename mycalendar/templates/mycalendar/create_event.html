@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Tournament Event</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --primary: #00ffcc;
+            --primary-glow: rgba(0, 255, 204, 0.4);
+            --text-main: #e6edf3;
+            --text-muted: #7d8590;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            align-items: center;
+            background: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            padding: 60px 0 50px;
+        }
+
+        .container {
+            max-width: 90%;
+            width: 640px;
+        }
+
+        .back-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-nav a {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-nav a:hover {
+            color: var(--primary);
+        }
+
+        h1 {
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin: 0 0 8px;
+            text-align: center;
+            text-shadow: 0 0 12px var(--primary-glow);
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin: 0 0 34px;
+            text-align: center;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+            overflow: hidden;
+        }
+
+        .event-card::before {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            content: "";
+            display: block;
+            height: 4px;
+            width: 100%;
+        }
+
+        form {
+            display: block;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            color: var(--text-main);
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input,
+        textarea {
+            background: var(--bg);
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            color: var(--text-main);
+            font: inherit;
+            padding: 11px 12px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+            outline: none;
+        }
+
+        .errorlist {
+            color: #ff7b72;
+            list-style: none;
+            margin: 8px 0 0;
+            padding: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            color: var(--primary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            color: var(--bg);
+        }
+
+        .save-btn {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .cancel-btn {
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+        }
+
+        .cancel-btn:hover {
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding-top: 35px;
+            }
+
+            form {
+                padding: 20px;
+            }
+
+            .form-actions .btn {
+                text-align: center;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="{% url 'calendar-home' %}">&larr; Back to Calendar</a>
+        </div>
+
+        <h1>Create Event</h1>
+        <p class="subtitle">Pin a tournament or game room event to the calendar.</p>
+
+        <div class="event-card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="field-group">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.date.label_tag }}
+                    {{ form.date }}
+                    {{ form.date.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn save-btn">Pin Event</button>
+                    <a href="{% url 'calendar-home' %}" class="btn cancel-btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

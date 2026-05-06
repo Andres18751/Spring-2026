@@ -43,6 +43,11 @@
         .event:last-child { 
             border-bottom: none; 
         }
+        .organizer {
+            color: #7d8590;
+            font-size: 0.9rem;
+            margin-top: -8px;
+        }
         .back-btn { 
             display: inline-block; 
             margin-bottom: 20px; 
@@ -61,12 +66,38 @@
                 0 0 15px #66b2ff,
                 0 0 30px #66b2ff;
         }
+        .event-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .pin-btn {
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            color: #00ffcc;
+            display: inline-block;
+            font-weight: 600;
+            padding: 8px 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .pin-btn:hover {
+            background: #00ffcc;
+            color: #0a0a0a;
+            box-shadow: 0 0 14px rgba(0, 255, 204, 0.45);
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <a href="javascript:history.back()" class="back-btn">&larr; Back to Calendar</a>
+        <div class="event-actions">
+            <a href="javascript:history.back()" class="back-btn">&larr; Back to Calendar</a>
+            {% if can_create_events %}
+                <a href="{% url 'create_event' %}?date={{ date_value }}" class="pin-btn">Pin Event Here</a>
+            {% endif %}
+        </div>
         
         <h2>Events for {{ date }}</h2>
 
@@ -74,6 +105,9 @@
             {% for event in events %}
                 <div class="event">
                     <h3>{{ event.title }}</h3>
+                    {% if event.created_by %}
+                        <p class="organizer">Organizer: {{ event.created_by.username }}</p>
+                    {% endif %}
                     <p>{{ event.description }}</p>
                 </div>
             {% endfor %}
