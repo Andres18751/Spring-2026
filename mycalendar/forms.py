@@ -24,22 +24,31 @@ class ProfileForm(forms.ModelForm):
     )
     class Meta:
         model = Profile
-        fields = ['bio', 'favorite_games', 'tags', 'meeting_times', 'days_available']
+        fields = ['profile_picture', 'bio', 'fun_facts', 'favorite_games', 'tags', 'meeting_times', 'days_available']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Tell us about yourself...'}),
+            'fun_facts': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Share a few fun facts about you...'}),
             'favorite_games': forms.TextInput(attrs={'placeholder': 'e.g., Smash, Mortal Kombat, Street Fighter'}),
+            'profile_picture': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.initial['tags'] = self._split_choices(self.instance.tags)
+            self.initial['meeting_times'] = self._split_choices(self.instance.meeting_times)
+            self.initial['days_available'] = self._split_choices(self.instance.days_available)
+
+    def _split_choices(self, value):
+        return [choice for choice in value.split(',') if choice] if value else []
     
     def save(self, commit=True):
         profile = super().save(commit=False)
+        profile.tags = ','.join(self.cleaned_data.get('tags', []))
+        profile.meeting_times = ','.join(self.cleaned_data.get('meeting_times', []))
+        profile.days_available = ','.join(self.cleaned_data.get('days_available', []))
         
         if commit:
             profile.save()
-        if self.cleaned_data.get('tags'):
-            profile.tags = ','.join(self.cleaned_data['tags'])
-        if self.cleaned_data.get('meeting_times'):
-            profile.meeting_times = ','.join(self.cleaned_data['meeting_times'])
-        if self.cleaned_data.get('days_available'):
-            profile.days_available = ','.join(self.cleaned_data['days_available'])
-        profile.save()
+            self.save_m2m()
         return profile

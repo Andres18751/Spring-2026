@@ -22,7 +22,7 @@ DAYS_AVAILABLE =[
     ('mon','Monday'),
     ('tue','Tuesday'),
     ('wed','Wednesday'),
-    ('thu''Thursday'),
+    ('thu','Thursday'),
     ('fri','Friday')
 ]
 class Event(models.Model):
@@ -39,7 +39,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
     # The fields they can fill out
+    profile_picture = models.FileField(upload_to='profile_pictures/', blank=True, null=True)
     bio = models.TextField(max_length=500, blank=True)
+    fun_facts = models.TextField(max_length=500, blank=True)
     favorite_games = models.CharField(max_length=100, blank=True)
 
     tags = models.CharField(
@@ -58,3 +60,20 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Loadout"
+
+    def _labels_for(self, stored_values, choices):
+        selected = stored_values.split(',') if stored_values else []
+        labels = dict(choices)
+        return [labels[value] for value in selected if value in labels]
+
+    @property
+    def tag_labels(self):
+        return self._labels_for(self.tags, TAGS_CHOICES)
+
+    @property
+    def meeting_time_labels(self):
+        return self._labels_for(self.meeting_times, MEETING_TIME_CHOICES)
+
+    @property
+    def day_available_labels(self):
+        return self._labels_for(self.days_available, DAYS_AVAILABLE)

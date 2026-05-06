@@ -2,7 +2,7 @@
 <div class="dashboard-container" style="padding-top: 50px;">
     <h2>Edit Loadout</h2>
     <div class="event-card" style="display: block;">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn" style="margin-top: 15px;">Save Loadout</button>
@@ -12,6 +12,11 @@
 </div>
 <style>
     /* Quick styling to make the form inputs match the dark mode theme */
-    input, textarea { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; padding: 10px; width: 100%; border-radius: 5px; }
+    input, textarea { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; padding: 10px; width: 100%; border-radius: 5px; box-sizing: border-box; }
+    input[type="checkbox"] { width: auto; margin-right: 8px; }
+    input[type="file"] { padding: 8px; }
+    label { color: #e6edf3; font-weight: 600; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin: 8px 0; }
 </style>
 {% endblock %}
