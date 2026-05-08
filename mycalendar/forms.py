@@ -1,16 +1,38 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from urllib.parse import urlparse
 from .models import Event, Profile, TAGS_CHOICES, MEETING_TIME_CHOICES, DAYS_AVAILABLE
+from .twitch import extract_twitch_login
 
 
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'description', 'date']
+        fields = ['title', 'description', 'date', 'start_time', 'twitch_url']
         widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'e.g., Smash Singles Bracket'}),
-            'description': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Add rules, check-in time, prize info, or anything players should know.'}),
+            'title': forms.TextInput(attrs={'placeholder': 'e.g., Smash Singles Bracket or Pablo stream night'}),
+            'description': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Add rules, check-in time, stream plans, or anything players should know.'}),
             'date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'twitch_url': forms.URLInput(attrs={'placeholder': 'https://www.twitch.tv/yourchannel'}),
         }
+
+    def clean_twitch_url(self):
+        twitch_url = self.cleaned_data.get('twitch_url', '').strip()
+        if not twitch_url:
+            return twitch_url
+
+        parsed_url = urlparse(twitch_url)
+        hostname = parsed_url.netloc.lower().removeprefix('www.')
+
+        if hostname != 'twitch.tv':
+            raise ValidationError('Please enter a valid Twitch channel link, like https://www.twitch.tv/yourchannel.')
+
+        channel_name = extract_twitch_login(twitch_url)
+        if not channel_name:
+            raise ValidationError('Please include the Twitch channel name in the link.')
+
+        return f'https://www.twitch.tv/{channel_name}'
 
 class ProfileForm(forms.ModelForm):
     tags = forms.MultipleChoiceField(
