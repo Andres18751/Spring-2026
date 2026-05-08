@@ -48,6 +48,72 @@
             font-size: 0.9rem;
             margin-top: -8px;
         }
+        .event-meta {
+            color: #7d8590;
+            font-size: 0.9rem;
+            margin: -6px 0 10px;
+        }
+        .watch-btn {
+            border: 1px solid #9146ff;
+            border-radius: 5px;
+            color: #c9a7ff;
+            display: inline-block;
+            font-weight: 600;
+            margin-top: 8px;
+            padding: 8px 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .watch-btn:hover {
+            background: #9146ff;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(145, 70, 255, 0.45);
+        }
+        .twitch-card {
+            align-items: center;
+            background: rgba(145, 70, 255, 0.08);
+            border: 1px solid rgba(145, 70, 255, 0.45);
+            border-radius: 8px;
+            display: flex;
+            gap: 14px;
+            margin-top: 12px;
+            padding: 12px;
+        }
+        .twitch-avatar {
+            border: 2px solid #9146ff;
+            border-radius: 50%;
+            height: 54px;
+            object-fit: cover;
+            width: 54px;
+        }
+        .twitch-name {
+            color: #ffffff;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+        .live-badge,
+        .offline-badge {
+            border-radius: 999px;
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 4px 8px;
+            text-transform: uppercase;
+        }
+        .live-badge {
+            background: #eb0400;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(235, 4, 0, 0.45);
+        }
+        .offline-badge {
+            border: 1px solid #7d8590;
+            color: #7d8590;
+        }
+        .stream-detail {
+            color: #c9a7ff;
+            margin: 8px 0 0;
+        }
         .back-btn { 
             display: inline-block; 
             margin-bottom: 20px; 
@@ -105,10 +171,35 @@
             {% for event in events %}
                 <div class="event">
                     <h3>{{ event.title }}</h3>
+                    {% if event.start_time %}
+                        <p class="event-meta">Starts at {{ event.start_time|time:"g:i A" }}</p>
+                    {% endif %}
                     {% if event.created_by %}
                         <p class="organizer">Organizer: {{ event.created_by.username }}</p>
                     {% endif %}
                     <p>{{ event.description }}</p>
+                    {% if event.twitch_url %}
+                        <div class="twitch-card">
+                            {% if event.twitch_profile_image_url %}
+                                <img class="twitch-avatar" src="{{ event.twitch_profile_image_url }}" alt="{{ event.twitch_display_name|default:event.twitch_login }} Twitch profile image">
+                            {% endif %}
+                            <div>
+                                <p class="twitch-name">{{ event.twitch_display_name|default:event.twitch_login|default:"Twitch Channel" }}</p>
+                                {% if event.twitch_live_status %}
+                                    <span class="live-badge">Live Now</span>
+                                    {% if event.twitch_stream_title %}
+                                        <p class="stream-detail">{{ event.twitch_stream_title }}</p>
+                                    {% endif %}
+                                    {% if event.twitch_stream_game_name %}
+                                        <p class="event-meta">{{ event.twitch_stream_game_name }}{% if event.twitch_viewer_count %} · {{ event.twitch_viewer_count }} viewers{% endif %}</p>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="offline-badge">Offline</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <a class="watch-btn" href="{{ event.twitch_url }}" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}

@@ -137,6 +137,12 @@
             padding: 0;
         }
 
+        .field-help {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 8px 0 0;
+        }
+
         .form-actions {
             display: flex;
             flex-wrap: wrap;
@@ -202,7 +208,7 @@
         </div>
 
         <h1>Create Event</h1>
-        <p class="subtitle">Pin a tournament or game room event to the calendar.</p>
+        <p class="subtitle">Pin a tournament, game room event, or Twitch stream to the calendar.</p>
 
         <div class="event-card">
             <form method="post">
@@ -218,6 +224,19 @@
                     {{ form.date.label_tag }}
                     {{ form.date }}
                     {{ form.date.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.start_time.label_tag }}
+                    {{ form.start_time }}
+                    {{ form.start_time.errors }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.twitch_url.label_tag }}
+                    {{ form.twitch_url }}
+                    {{ form.twitch_url.errors }}
+                    <p class="field-help">Regular users can post stream events by adding their Twitch channel link.</p>
                 </div>
 
                 <div class="field-group">

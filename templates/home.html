@@ -122,6 +122,13 @@
             font-weight: 600;
             color: var(--text-main);
         }
+        .stream-label {
+            color: #c9a7ff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
         
         /* The smaller button inside the event card */
         .view-btn {
@@ -192,6 +199,11 @@
                 <div class="event-info">
                     <span class="event-date">{{ event.date }}</span>
                     <span class="event-title">{{ event.title }}</span>
+                    {% if event.twitch_url %}
+                        <span class="stream-label">
+                            {% if event.twitch_live_status %}Live on Twitch{% else %}Twitch stream{% endif %}
+                        </span>
+                    {% endif %}
                 </div>
                 <a class="view-btn" href="/calendar/{{ event.date.year }}/{{ event.date.month }}/{{ event.date.day }}/">
                     View Details

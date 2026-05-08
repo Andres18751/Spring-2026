@@ -6,6 +6,7 @@ from datetime import datetime, date, timedelta
 from .utils import CustomCalendar
 from .models import Event, Profile
 from .forms import EventForm, ProfileForm
+from .twitch import TwitchAPIError, hydrate_event_twitch_data, is_configured, refresh_event_live_status
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 
@@ -57,7 +58,7 @@ def show_calendar(request, year=None, month=None):
         'next_year': next_month.year,
         'next_month': next_month.month,
         'event_days': event_days,  # Pass the list of event days to the template
-        'can_create_events': is_tournament_organizer(request.user),
+        'can_create_events': request.user.is_authenticated,
     }
     return render(request, 'mycalendar/calendar.html', context)
 
@@ -65,6 +66,22 @@ def show_calendar(request, year=None, month=None):
 def daily_events(request, year, month, day):
     # Fetch all events from the database that match this exact date
     events = Event.objects.filter(date__year=year, date__month=month, date__day=day)
+
+    if is_configured():
+        for event in events:
+            if event.twitch_login:
+                try:
+                    refresh_event_live_status(event)
+                    event.save(update_fields=[
+                        'twitch_live_status',
+                        'twitch_stream_title',
+                        'twitch_stream_game_name',
+                        'twitch_viewer_count',
+                        'twitch_last_checked_at',
+                    ])
+                except TwitchAPIError:
+                    messages.warning(request, 'Twitch live status could not be refreshed right now.')
+                    break
     
     # Format a nice date string for the template
     date_obj = datetime(year, month, day)
@@ -74,7 +91,7 @@ def daily_events(request, year, month, day):
         'events': events,
         'date': formatted_date,
         'date_value': date_obj.strftime('%Y-%m-%d'),
-        'can_create_events': is_tournament_organizer(request.user),
+        'can_create_events': request.user.is_authenticated,
     }
     return render(request, 'mycalendar/events.html', context)
 
@@ -102,17 +119,13 @@ def home(request):
     
     context = {
         'events': upcoming_events,
-        'can_create_events': is_tournament_organizer(request.user),
+        'can_create_events': request.user.is_authenticated,
     }
     return render(request, 'home.html', context)
 
 
 @login_required
 def create_event(request):
-    if not is_tournament_organizer(request.user):
-        messages.error(request, 'Only tournament organizers can create calendar events.')
-        return redirect('calendar-home')
-
     initial = {}
     requested_date = request.GET.get('date')
     if requested_date:
@@ -121,8 +134,26 @@ def create_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
+            is_organizer = is_tournament_organizer(request.user)
+            has_twitch_link = bool(form.cleaned_data.get('twitch_url'))
+
+            if not is_organizer and not has_twitch_link:
+                form.add_error(None, 'Add a Twitch link to post a stream event, or ask an admin for Tournament Organizer access.')
+                return render(request, 'mycalendar/create_event.html', {'form': form})
+
             event = form.save(commit=False)
             event.created_by = request.user
+
+            if event.twitch_url:
+                if is_configured():
+                    try:
+                        hydrate_event_twitch_data(event)
+                    except TwitchAPIError as error:
+                        form.add_error('twitch_url', str(error))
+                        return render(request, 'mycalendar/create_event.html', {'form': form})
+                else:
+                    messages.warning(request, 'Twitch API keys are not configured yet, so the event was saved without Twitch profile data.')
+
             event.save()
             messages.success(request, 'Event pinned to the calendar.')
             return redirect('daily-events', year=event.date.year, month=event.date.month, day=event.date.day)
