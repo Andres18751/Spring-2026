@@ -67,12 +67,11 @@
             font-size: 0.9rem;
             margin-top: -8px;
         }
-
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--primary);
-            text-decoration: none;
+        .back-btn { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #66b2ff; 
+            text-decoration: none; 
             font-weight: 400;
             transition: all 0.3s ease;
         }
@@ -122,10 +121,35 @@
             {% for event in events %}
                 <div class="event">
                     <h3>{{ event.title }}</h3>
+                    {% if event.start_time %}
+                        <p class="event-meta">Starts at {{ event.start_time|time:"g:i A" }}</p>
+                    {% endif %}
                     {% if event.created_by %}
                         <p class="organizer">Organizer: {{ event.created_by.username }}</p>
                     {% endif %}
                     <p>{{ event.description }}</p>
+                    {% if event.twitch_url %}
+                        <div class="twitch-card">
+                            {% if event.twitch_profile_image_url %}
+                                <img class="twitch-avatar" src="{{ event.twitch_profile_image_url }}" alt="{{ event.twitch_display_name|default:event.twitch_login }} Twitch profile image">
+                            {% endif %}
+                            <div>
+                                <p class="twitch-name">{{ event.twitch_display_name|default:event.twitch_login|default:"Twitch Channel" }}</p>
+                                {% if event.twitch_live_status %}
+                                    <span class="live-badge">Live Now</span>
+                                    {% if event.twitch_stream_title %}
+                                        <p class="stream-detail">{{ event.twitch_stream_title }}</p>
+                                    {% endif %}
+                                    {% if event.twitch_stream_game_name %}
+                                        <p class="event-meta">{{ event.twitch_stream_game_name }}{% if event.twitch_viewer_count %} · {{ event.twitch_viewer_count }} viewers{% endif %}</p>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="offline-badge">Offline</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <a class="watch-btn" href="{{ event.twitch_url }}" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}

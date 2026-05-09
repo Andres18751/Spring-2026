@@ -29,6 +29,17 @@ class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     date = models.DateField()
+    start_time = models.TimeField(blank=True, null=True)
+    twitch_url = models.URLField(blank=True)
+    twitch_login = models.CharField(max_length=100, blank=True)
+    twitch_display_name = models.CharField(max_length=100, blank=True)
+    twitch_profile_image_url = models.URLField(blank=True)
+    twitch_broadcaster_type = models.CharField(max_length=50, blank=True)
+    twitch_live_status = models.BooleanField(default=False)
+    twitch_stream_title = models.CharField(max_length=300, blank=True)
+    twitch_stream_game_name = models.CharField(max_length=150, blank=True)
+    twitch_viewer_count = models.PositiveIntegerField(blank=True, null=True)
+    twitch_last_checked_at = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
