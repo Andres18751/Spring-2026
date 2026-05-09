@@ -12,7 +12,15 @@
             --text-muted: #7d8590;
             --cell-bg: #21262d;
         }
-
+        body.light-mode {
+            --bg: #f6f8fa;
+            --card-bg: #ffffff;
+            --primary: #0969da;
+            --primary-glow: rgba(9, 105, 218, 0.2);
+            --text-main: #1f2328;
+            --text-muted: #57606a;
+            --cell-bg: #f0f2f5;
+        }
         * {
             box-sizing: border-box;
         }
@@ -287,6 +295,19 @@
                 width: 100%;
             }
         }
+        .theme-btn {
+            position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px;
+            border-radius: 50%; background: var(--card-bg);
+            border: 1px solid var(--primary); color: var(--primary);
+            font-size: 24px; cursor: pointer; z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover { 
+            transform: scale(1.1); 
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
     </style>
 </head>
 <body>
@@ -360,6 +381,31 @@
         </form>
     </div>
 </div>
+<button id="theme-toggle" class="theme-btn" title="Switch light/dark mode">🌙</button>
+<script>
+    function setTheme(theme) {
+        if (theme === 'light') {
+            document.body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            document.getElementById('theme-toggle').textContent = '☀️';
+        } else {
+            document.body.classList.remove('light-mode');
+            localStorage.setItem('theme', 'dark');
+            document.getElementById('theme-toggle').textContent = '🌙';
+        }
+    }
 
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        setTheme('light');
+    } else {
+        setTheme('dark');
+    }
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const isLight = document.body.classList.contains('light-mode');
+        setTheme(isLight ? 'dark' : 'light');
+    });
+</script>
 </body>
 </html>
