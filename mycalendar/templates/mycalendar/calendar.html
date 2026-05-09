@@ -13,7 +13,16 @@
             --text-muted: #7d8590;   /* Dimmed gray for headers */
             --cell-bg: #21262d;      /* Dark gray for empty days */
         }
-        
+        body.light-mode {
+            --bg: #f6f8fa;
+            --card-bg: #ffffff;
+            --primary: #0969da;
+            --primary-glow: rgba(9, 105, 218, 0.2);
+            --text-main: #1f2328;
+            --text-muted: #57606a;
+            --cell-bg: #f0f2f5;
+        }
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: var(--bg); 
@@ -209,6 +218,11 @@
             }
         }
     });
+</script>
+<script>
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+    }
 </script>
 </body>
 </html>

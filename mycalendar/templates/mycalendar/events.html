@@ -5,77 +5,94 @@
     <title>Events for {{ date }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background-color: #0a0a0a; /* Darkened the background slightly to make the neon pop more */
-            color: #e0e0e0; 
-            padding: 40px; 
-            font-weight: 300; 
-            /* A very faint, subtle glow for the body text to keep it readable but atmospheric */
-            text-shadow: 0 0 2px rgba(224, 224, 224, 0.3);
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --primary: #00ffcc;
+            --primary-glow: rgba(0, 255, 204, 0.4);
+            --text-main: #e6edf3;
+            --text-muted: #7d8590;
+            --cell-bg: #21262d;
+            --border: #30363d;
         }
-        .container { 
-            background: #141414; /* Darker container to contrast with the glow */
-            padding: 20px 30px; 
-            border-radius: 12px; 
-            max-width: 600px; 
-            margin: auto; 
-            /* Added a subtle blue ambient glow to the container itself */
-            box-shadow: 0 8px 32px rgba(102, 178, 255, 0.15), 0 0 10px rgba(102, 178, 255, 0.05) inset; 
-            border: 1px solid rgba(102, 178, 255, 0.1);
+
+        /* Light mode overrides */
+        body.light-mode {
+            --bg: #f6f8fa;
+            --card-bg: #ffffff;
+            --primary: #0969da;
+            --primary-glow: rgba(9, 105, 218, 0.2);
+            --text-main: #1f2328;
+            --text-muted: #57606a;
+            --cell-bg: #f0f2f5;
+            --border: #d0d7de;
         }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 40px;
+            font-weight: 300;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 8px 32px var(--primary-glow);
+            border: 1px solid var(--border);
+        }
+
         h2, h3 {
-            color: #ffffff; 
-            font-weight: 600; 
-            letter-spacing: 1px; 
-            /* The Neon Glow Effect: Layering tight white shadows with wider colored shadows */
-            text-shadow: 
-                0 0 5px rgba(255, 255, 255, 0.8),
-                0 0 10px rgba(255, 255, 255, 0.5),
-                0 0 20px #66b2ff,
-                0 0 40px #66b2ff,
-                0 0 60px #007bff;
+            color: var(--text-main);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px var(--primary-glow);
         }
-        .event { 
-            border-bottom: 1px solid rgba(102, 178, 255, 0.2); /* Tinted the border to match the neon theme */
-            padding: 15px 0; 
+
+        .event {
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
         }
-        .event:last-child { 
-            border-bottom: none; 
+        .event:last-child {
+            border-bottom: none;
         }
+
         .organizer {
-            color: #7d8590;
+            color: var(--text-muted);
             font-size: 0.9rem;
             margin-top: -8px;
         }
-        .back-btn { 
-            display: inline-block; 
-            margin-bottom: 20px; 
-            color: #66b2ff; 
-            text-decoration: none; 
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-decoration: none;
             font-weight: 400;
-            text-shadow: 0 0 8px rgba(102, 178, 255, 0.4); /* Base glow for the button */
-            transition: all 0.3s ease; 
+            transition: all 0.3s ease;
         }
         .back-btn:hover {
-            color: #ffffff; 
-            transform: translateX(-4px); 
-            /* Intense glow on hover */
-            text-shadow: 
-                0 0 5px #ffffff,
-                0 0 15px #66b2ff,
-                0 0 30px #66b2ff;
+            color: var(--text-main);
+            transform: translateX(-4px);
+            text-shadow: 0 0 5px var(--primary);
         }
+
         .event-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 14px;
             margin-bottom: 20px;
         }
+
         .pin-btn {
-            border: 1px solid #00ffcc;
+            border: 1px solid var(--primary);
             border-radius: 5px;
-            color: #00ffcc;
+            color: var(--primary);
             display: inline-block;
             font-weight: 600;
             padding: 8px 14px;
@@ -83,9 +100,9 @@
             transition: all 0.3s ease;
         }
         .pin-btn:hover {
-            background: #00ffcc;
-            color: #0a0a0a;
-            box-shadow: 0 0 14px rgba(0, 255, 204, 0.45);
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 14px var(--primary-glow);
         }
     </style>
 </head>
@@ -115,6 +132,10 @@
             <p>No events scheduled for this day.</p>
         {% endif %}
     </div>
-
+<script>
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+    }
+</script>
 </body>
 </html>
